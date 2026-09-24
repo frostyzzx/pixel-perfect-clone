@@ -42,7 +42,7 @@ function CaseDetail() {
   const open = () => {
     setOpening(true);
     setTimeout(() => {
-      const item = c.items[Math.floor(Math.random() * c.items.length)];
+      const item = c.items[Math.floor(Math.random() * c.items.length)]!;
       setOpening(false);
       setWon(item);
       toast.success(`You unboxed ${item.name}!`);

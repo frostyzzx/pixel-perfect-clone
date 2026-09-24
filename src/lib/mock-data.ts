@@ -65,12 +65,12 @@ export const CURRENT_USER = {
 };
 
 export const RECENT_DROPS = [
-  { user: "Kairo", item: ITEMS[0] },
-  { user: "Vexa", item: ITEMS[1] },
-  { user: "Zenith", item: ITEMS[3] },
-  { user: "Orbit", item: ITEMS[2] },
-  { user: "Lumen", item: ITEMS[4] },
-  { user: "Rift", item: ITEMS[3] },
+  { user: "Kairo", item: ITEMS[0]! },
+  { user: "Vexa", item: ITEMS[1]! },
+  { user: "Zenith", item: ITEMS[3]! },
+  { user: "Orbit", item: ITEMS[2]! },
+  { user: "Lumen", item: ITEMS[4]! },
+  { user: "Rift", item: ITEMS[3]! },
 ];
 
 export const LEADERBOARD = [
