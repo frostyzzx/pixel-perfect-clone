@@ -259,7 +259,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      open_case: { Args: { _case_id: string }; Returns: Json }
+      open_case: { Args: { _case_id: string; _user_id: string }; Returns: Json }
     }
     Enums: {
       item_rarity: "COMMON" | "UNCOMMON" | "RARE" | "EPIC" | "LEGENDARY"
