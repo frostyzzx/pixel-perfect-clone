@@ -1,5 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
+import { CaseSpinner } from "@/components/game/CaseSpinner";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
@@ -46,6 +47,8 @@ function CaseDetail() {
   const c = Route.useLoaderData();
   const [opening, setOpening] = useState(false);
   const [won, setWon] = useState<Item | null>(null);
+  const [result, setResult] = useState<Item | null>(null);
+  const [spinKey, setSpinKey] = useState(0);
 
   const openFn = useServerFn(openCase);
   const qc = useQueryClient();
@@ -62,32 +65,41 @@ function CaseDetail() {
     if (busy.current) return;
     busy.current = true;
     setOpening(true);
+    setResult(null);
+    setSpinKey((k) => k + 1);
     try {
-      const [res] = await Promise.all([
-        openFn({ data: { caseId: c.id } }),
-        new Promise((r) => setTimeout(r, 1200)),
-      ]);
+      const res = await openFn({ data: { caseId: c.id } });
       if (!res.ok) {
         toast.error(res.error);
+        busy.current = false;
+        setOpening(false);
         return;
       }
-      setWon(res.item);
-      toast.success(`You unboxed ${res.item.name}!`);
+      setResult(res.item); // server-decided; reel only presents it
     } catch {
       toast.error("Could not open the case. Try again.");
-    } finally {
       busy.current = false;
       setOpening(false);
-      refreshProfile();
-      qc.invalidateQueries({ queryKey: ["inventory"] });
     }
   };
+
+  const onFinish = useCallback(() => {
+    busy.current = false;
+    setOpening(false);
+    setWon(result);
+    if (result) toast.success(`You unboxed ${result.name}!`);
+    refreshProfile();
+    qc.invalidateQueries({ queryKey: ["inventory"] });
+  }, [result, refreshProfile, qc]);
 
   return (
     <div className="mx-auto max-w-7xl">
       <Link to="/cases" className="mb-6 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
         <ArrowLeft className="size-4" /> All cases
       </Link>
+      <div className="mb-8">
+        <CaseSpinner key={spinKey} pool={c.items} winner={result} waiting={opening} onFinish={onFinish} />
+      </div>
       <div className="grid gap-8 lg:grid-cols-2">
         <div className={cn(`rarity-${c.rarity}`, "rarity-card p-4", c.rarity === "legendary" && "shimmer")}>
           <img src={c.image} alt={c.name} width={1024} height={1024} className={cn("aspect-square w-full rounded-lg object-cover", opening && "animate-pulse")} />
@@ -130,10 +142,13 @@ function CaseDetail() {
         </div>
       </section>
 
-      <Modal open={!!won} onOpenChange={(o) => !o && setWon(null)} title="YOU UNBOXED" description="Added to your inventory.">
+      <Modal open={!!won} onOpenChange={(o) => !o && setWon(null)} title="YOU UNBOXED" description="Added to your inventory. Your balance has been updated.">
         {won && (
-          <div className="mx-auto w-56">
-            <ItemCard item={won} />
+          <div className="flex flex-col items-center gap-3">
+            <div className="reward-pop mx-auto w-56">
+              <ItemCard item={won} />
+            </div>
+            <RarityBadge rarity={won.rarity} />
           </div>
         )}
         <Button variant="hero" onClick={() => setWon(null)}>COLLECT</Button>
