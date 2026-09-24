@@ -37,7 +37,7 @@ function Login() {
       password: String(f.get("password")),
     });
     setLoading(false);
-    if (error) return toast.error(error.message === "Email not confirmed" ? "Confirm your email first." : "Invalid email or password.");
+    if (error) { toast.error(error.message === "Email not confirmed" ? "Confirm your email first." : "Invalid email or password."); return; }
     toast.success("Welcome back!");
     nav({ to: target });
   };

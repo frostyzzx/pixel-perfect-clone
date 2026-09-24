@@ -35,7 +35,7 @@ function Register() {
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const parsed = schema.safeParse(Object.fromEntries(new FormData(e.currentTarget)));
-    if (!parsed.success) return toast.error(parsed.error.issues[0]?.message ?? "Invalid data");
+    if (!parsed.success) { toast.error(parsed.error.issues[0]?.message ?? "Invalid data"); return; }
     setLoading(true);
     const { data, error } = await supabase.auth.signUp({
       email: parsed.data.email,
@@ -43,7 +43,7 @@ function Register() {
       options: { emailRedirectTo: window.location.origin, data: { username: parsed.data.username } },
     });
     setLoading(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     if (data.session) {
       toast.success("Account created! +1,000 credits");
       window.location.assign("/");

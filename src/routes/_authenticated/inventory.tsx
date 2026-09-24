@@ -3,7 +3,7 @@ import { ItemCard } from "@/components/game/cards";
 import { Credits, PageHeader } from "@/components/game/primitives";
 import { ITEMS } from "@/lib/mock-data";
 
-export const Route = createFileRoute("/inventory")({
+export const Route = createFileRoute("/_authenticated/inventory")({
   head: () => ({
     meta: [
       { title: "Inventory — SKINVAULT" },

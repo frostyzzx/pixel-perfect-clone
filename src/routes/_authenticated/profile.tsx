@@ -35,7 +35,7 @@ function Profile() {
     setSaving(true);
     const { error } = await supabase.from("profiles").update({ username: username.trim() || null }).eq("id", profile.id);
     setSaving(false);
-    if (error) return toast.error(error.code === "23505" ? "Username already taken" : "Could not save username");
+    if (error) { toast.error(error.code === "23505" ? "Username already taken" : "Could not save username"); return; }
     toast.success("Username updated");
     refreshProfile();
   };
