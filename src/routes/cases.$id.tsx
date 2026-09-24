@@ -56,7 +56,7 @@ function CaseDetail() {
 
   const open = async () => {
     if (!user) {
-      navigate({ to: "/login", search: { redirect: `/cases/${c.id}` } as never });
+      navigate({ to: "/login", search: { redirect: `/cases/${c.id}` } });
       return;
     }
     if (busy.current) return;
