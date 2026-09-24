@@ -6,12 +6,14 @@ import { Button } from "@/components/ui/button";
 import { ItemCard } from "@/components/game/cards";
 import { Credits, RarityBadge, SectionHeading, Spinner } from "@/components/game/primitives";
 import { Modal } from "@/components/game/Modal";
-import { getCase, type Item } from "@/lib/mock-data";
+import type { Item } from "@/lib/mock-data";
+import { getCaseById } from "@/lib/catalog.functions";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/cases/$id")({
-  loader: ({ params }) => {
-    const c = getCase(params.id);
+  loader: async ({ params }) => {
+    if (!/^[0-9a-f-]{36}$/i.test(params.id)) throw notFound();
+    const c = await getCaseById({ data: { id: params.id } });
     if (!c) throw notFound();
     return c;
   },
@@ -31,6 +33,7 @@ export const Route = createFileRoute("/cases/$id")({
       <Link to="/cases" className="mt-4 inline-block text-secondary">Back to cases</Link>
     </div>
   ),
+  errorComponent: () => <p className="py-20 text-center">Could not load this case.</p>,
   component: CaseDetail,
 });
 
@@ -42,7 +45,9 @@ function CaseDetail() {
   const open = () => {
     setOpening(true);
     setTimeout(() => {
-      const item = c.items[Math.floor(Math.random() * c.items.length)]!;
+      // Preview roll weighted by the real odds (server-side opening comes next)
+      let r = Math.random() * 100;
+      const item = c.items.find((it) => (r -= it.odds ?? 0) < 0) ?? c.items[c.items.length - 1]!;
       setOpening(false);
       setWon(item);
       toast.success(`You unboxed ${item.name}!`);

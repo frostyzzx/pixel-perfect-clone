@@ -4,7 +4,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { CaseCard, ItemCard } from "@/components/game/cards";
 import { Credits, RarityBadge, SectionHeading, UserAvatar } from "@/components/game/primitives";
-import { CASES, CURRENT_USER, DAILY_REWARDS, ITEMS, RECENT_DROPS, formatCredits } from "@/lib/mock-data";
+import { listCases } from "@/lib/catalog.functions";
+import { CURRENT_USER, DAILY_REWARDS, ITEMS, RECENT_DROPS, formatCredits } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 import caseAurum from "@/assets/case-aurum.jpg";
 
@@ -35,7 +36,7 @@ function Home() {
           }
         />
         <div className="grid grid-cols-2 gap-3 md:gap-4 xl:grid-cols-4">
-          {CASES.map((c) => (
+          {Route.useLoaderData().slice(0, 4).map((c) => (
             <CaseCard key={c.id} c={c} />
           ))}
         </div>
