@@ -77,6 +77,8 @@ export function Navigation({ isActive }: { isActive: (to: string) => boolean }) 
 }
 
 export function Header() {
+  const { profile, user, loading, signOut } = useAuth();
+  const name = profile?.username ?? user?.email?.split("@")[0] ?? "Player";
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-background/70 backdrop-blur-xl">
       <div className="flex h-16 items-center gap-3 px-4 md:px-6">

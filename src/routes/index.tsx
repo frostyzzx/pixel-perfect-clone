@@ -156,7 +156,7 @@ function DailyRewards() {
           </div>
         ))}
       </div>
-      <Button className="mt-5 w-full" variant="hero" onClick={() => toast.success("+500 credits claimed!", { description: "Day 4 streak reward." })}>
+      <Button className="mt-5 w-full" variant="hero" onClick={() => toast("Daily rewards are coming soon")}>
         <Sparkles /> CLAIM DAY 4
       </Button>
     </section>
