@@ -24,6 +24,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
+  const cases = Route.useLoaderData();
   return (
     <div className="mx-auto max-w-7xl space-y-14">
       <Hero />
@@ -38,7 +39,7 @@ function Home() {
           }
         />
         <div className="grid grid-cols-2 gap-3 md:gap-4 xl:grid-cols-4">
-          {Route.useLoaderData().slice(0, 4).map((c) => (
+          {cases.slice(0, 4).map((c) => (
             <CaseCard key={c.id} c={c} />
           ))}
         </div>
