@@ -1,5 +1,10 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
+import { openCase } from "@/lib/opening.functions";
+import { useAuth } from "@/hooks/useAuth";
 import { ArrowLeft, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -42,16 +47,40 @@ function CaseDetail() {
   const [opening, setOpening] = useState(false);
   const [won, setWon] = useState<Item | null>(null);
 
-  const open = () => {
+  const openFn = useServerFn(openCase);
+  const qc = useQueryClient();
+  const navigate = useNavigate();
+  const { user, profile, refreshProfile } = useAuth();
+  const busy = useRef(false);
+  const canAfford = !profile || profile.balance >= c.price;
+
+  const open = async () => {
+    if (!user) {
+      navigate({ to: "/login", search: { redirect: `/cases/${c.id}` } as never });
+      return;
+    }
+    if (busy.current) return;
+    busy.current = true;
     setOpening(true);
-    setTimeout(() => {
-      // Preview roll weighted by the real odds (server-side opening comes next)
-      let r = Math.random() * 100;
-      const item = c.items.find((it) => (r -= it.odds ?? 0) < 0) ?? c.items[c.items.length - 1]!;
+    try {
+      const [res] = await Promise.all([
+        openFn({ data: { caseId: c.id } }),
+        new Promise((r) => setTimeout(r, 1200)),
+      ]);
+      if (!res.ok) {
+        toast.error(res.error);
+        return;
+      }
+      setWon(res.item);
+      toast.success(`You unboxed ${res.item.name}!`);
+    } catch {
+      toast.error("Could not open the case. Try again.");
+    } finally {
+      busy.current = false;
       setOpening(false);
-      setWon(item);
-      toast.success(`You unboxed ${item.name}!`);
-    }, 1200);
+      refreshProfile();
+      qc.invalidateQueries({ queryKey: ["inventory"] });
+    }
   };
 
   return (
@@ -70,13 +99,14 @@ function CaseDetail() {
           <div className="mt-6 card-premium p-5">
             <p className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">Price</p>
             <Credits value={c.price} className="text-2xl text-warning" />
-            <Button variant="hero" size="lg" className="mt-4 w-full" onClick={open} disabled={opening}>
-              {opening ? <Spinner className="text-primary-foreground" /> : <Zap />} {opening ? "OPENING..." : "OPEN CASE"}
+            <Button variant="hero" size="lg" className="mt-4 w-full" onClick={open} disabled={opening || (!!user && !canAfford)}>
+              {opening ? <Spinner className="text-primary-foreground" /> : <Zap />} {opening ? "OPENING..." : !user ? "LOG IN TO OPEN" : canAfford ? "OPEN CASE" : "NOT ENOUGH CREDITS"}
             </Button>
             <p className="mt-3 text-center text-[11px] text-muted-foreground">Virtual credits only · No real money</p>
           </div>
           <div className="mt-6 card-premium p-5">
-            <p className="mb-3 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">Drop odds</p>
+            <p className="mb-1 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">Drop odds</p>
+            <p className="mb-3 text-[11px] text-muted-foreground">Results are drawn on our servers using exactly these odds (total 100%).</p>
             <ul className="space-y-2">
               {c.items.map((it) => (
                 <li key={it.id} className={cn(`rarity-${it.rarity}`, "flex items-center justify-between text-sm")}>
