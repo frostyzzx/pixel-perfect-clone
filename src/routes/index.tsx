@@ -101,7 +101,7 @@ function Hero() {
               </div>
             </div>
           </div>
-          <ItemCard item={ITEMS[1]!} className="absolute -left-6 bottom-6 hidden w-32 rotate-[-8deg] sm:block" />
+          <ItemCard item={ITEMS[1]!} className="absolute -left-8 bottom-28 hidden w-32 rotate-[-8deg] sm:block" />
           <ItemCard item={ITEMS[3]!} className="absolute -right-6 top-6 hidden w-28 rotate-[8deg] sm:block" />
         </div>
       </div>
