@@ -1,8 +1,9 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Box, Home, Package, Store, Trophy, User, Gift, LogIn } from "lucide-react";
+import { Box, Home, Package, Store, Trophy, User, Gift, LogIn, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { CURRENT_USER } from "@/lib/mock-data";
 import { BalanceDisplay, UserAvatar } from "@/components/game/primitives";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
 export const NAV = [
@@ -83,17 +84,26 @@ export function Header() {
           <Logo />
         </div>
         <div className="ml-auto flex items-center gap-3">
-          <BalanceDisplay value={CURRENT_USER.balance} />
-          <Link to="/login" className="hidden rounded-lg border border-border p-2 text-muted-foreground hover:text-foreground sm:block" aria-label="Login">
-            <LogIn className="size-4" />
-          </Link>
-          <Link to="/profile" className="flex items-center gap-2">
-            <UserAvatar name={CURRENT_USER.name} size="sm" level={CURRENT_USER.level} />
-            <div className="hidden leading-tight md:block">
-              <p className="text-xs font-semibold">{CURRENT_USER.name}</p>
-              <p className="font-mono text-[10px] text-secondary">LVL {CURRENT_USER.level}</p>
-            </div>
-          </Link>
+          {loading ? null : profile ? (
+            <>
+              <BalanceDisplay value={profile.balance} />
+              <Link to="/profile" className="flex items-center gap-2">
+                <UserAvatar name={name} size="sm" level={profile.level} />
+                <div className="hidden leading-tight md:block">
+                  <p className="text-xs font-semibold">{name}</p>
+                  <p className="font-mono text-[10px] text-secondary">LVL {profile.level}</p>
+                </div>
+              </Link>
+              <button onClick={signOut} className="rounded-lg border border-border p-2 text-muted-foreground transition hover:border-destructive/50 hover:text-destructive" aria-label="Log out">
+                <LogOut className="size-4" />
+              </button>
+            </>
+          ) : (
+            <>
+              <Button asChild variant="ghost" size="sm"><Link to="/login"><LogIn /> Log in</Link></Button>
+              <Button asChild size="sm"><Link to="/register">Sign up</Link></Button>
+            </>
+          )}
         </div>
       </div>
     </header>
