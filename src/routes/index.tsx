@@ -10,6 +10,8 @@ import { cn } from "@/lib/utils";
 import caseAurum from "@/assets/case-aurum.jpg";
 
 export const Route = createFileRoute("/")({
+  loader: () => listCases(),
+  errorComponent: () => <p className="py-20 text-center">Could not load cases.</p>,
   head: () => ({
     meta: [
       { title: "SKINVAULT — Open. Collect. Dominate." },
