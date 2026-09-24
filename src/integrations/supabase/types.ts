@@ -14,6 +14,105 @@ export type Database = {
   }
   public: {
     Tables: {
+      case_items: {
+        Row: {
+          case_id: string
+          created_at: string
+          id: string
+          item_id: string
+          probability: number
+        }
+        Insert: {
+          case_id: string
+          created_at?: string
+          id?: string
+          item_id: string
+          probability: number
+        }
+        Update: {
+          case_id?: string
+          created_at?: string
+          id?: string
+          item_id?: string
+          probability?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_items_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "case_items_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cases: {
+        Row: {
+          active: boolean
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          name: string
+          price: number
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          price: number
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          price?: number
+        }
+        Relationships: []
+      }
+      items: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          name: string
+          rarity: Database["public"]["Enums"]["item_rarity"]
+          virtual_value: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          rarity: Database["public"]["Enums"]["item_rarity"]
+          virtual_value: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          rarity?: Database["public"]["Enums"]["item_rarity"]
+          virtual_value?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -55,7 +154,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      item_rarity: "COMMON" | "UNCOMMON" | "RARE" | "EPIC" | "LEGENDARY"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -182,6 +281,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      item_rarity: ["COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
+    },
   },
 } as const

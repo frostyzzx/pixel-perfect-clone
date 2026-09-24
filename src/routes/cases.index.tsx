@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { CaseCard } from "@/components/game/cards";
 import { PageHeader } from "@/components/game/primitives";
-import { CASES } from "@/lib/mock-data";
+import { listCases } from "@/lib/catalog.functions";
 
 export const Route = createFileRoute("/cases/")({
   head: () => ({
@@ -12,16 +12,19 @@ export const Route = createFileRoute("/cases/")({
       { property: "og:description", content: "Browse every virtual case and its possible drops." },
     ],
   }),
+  loader: () => listCases(),
+  errorComponent: () => <p className="py-20 text-center">Could not load cases.</p>,
   component: CasesPage,
 });
 
 function CasesPage() {
+  const cases = Route.useLoaderData();
   return (
     <div className="mx-auto max-w-7xl">
       <PageHeader title="CASES" subtitle="Pick a case, check the odds, open with virtual credits." />
       <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-3 xl:grid-cols-4">
-        {[...CASES, ...CASES].map((c, i) => (
-          <CaseCard key={i} c={c} />
+        {cases.map((c) => (
+          <CaseCard key={c.id} c={c} />
         ))}
       </div>
     </div>

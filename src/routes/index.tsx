@@ -4,11 +4,14 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { CaseCard, ItemCard } from "@/components/game/cards";
 import { Credits, RarityBadge, SectionHeading, UserAvatar } from "@/components/game/primitives";
-import { CASES, CURRENT_USER, DAILY_REWARDS, ITEMS, RECENT_DROPS, formatCredits } from "@/lib/mock-data";
+import { listCases } from "@/lib/catalog.functions";
+import { CURRENT_USER, DAILY_REWARDS, ITEMS, RECENT_DROPS, formatCredits } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 import caseAurum from "@/assets/case-aurum.jpg";
 
 export const Route = createFileRoute("/")({
+  loader: () => listCases(),
+  errorComponent: () => <p className="py-20 text-center">Could not load cases.</p>,
   head: () => ({
     meta: [
       { title: "SKINVAULT — Open. Collect. Dominate." },
@@ -21,6 +24,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
+  const cases = Route.useLoaderData();
   return (
     <div className="mx-auto max-w-7xl space-y-14">
       <Hero />
@@ -35,7 +39,7 @@ function Home() {
           }
         />
         <div className="grid grid-cols-2 gap-3 md:gap-4 xl:grid-cols-4">
-          {CASES.map((c) => (
+          {cases.slice(0, 4).map((c) => (
             <CaseCard key={c.id} c={c} />
           ))}
         </div>
