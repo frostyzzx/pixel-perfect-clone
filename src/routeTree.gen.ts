@@ -10,12 +10,13 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as InventoryRouteImport } from './routes/inventory'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MarketplaceRouteImport } from './routes/marketplace'
-import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as AuthenticatedInventoryRouteImport } from './routes/_authenticated/inventory'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as CasesIndexRouteImport } from './routes/cases.index'
 import { Route as CasesIdRouteImport } from './routes/cases.$id'
 
@@ -24,9 +25,8 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const InventoryRoute = InventoryRouteImport.update({
-  id: '/inventory',
-  path: '/inventory',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LeaderboardRoute = LeaderboardRouteImport.update({
@@ -44,15 +44,20 @@ const MarketplaceRoute = MarketplaceRouteImport.update({
   path: '/marketplace',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProfileRoute = ProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedInventoryRoute = AuthenticatedInventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const CasesIndexRoute = CasesIndexRouteImport.update({
   id: '/cases/',
@@ -67,35 +72,36 @@ const CasesIdRoute = CasesIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/inventory': typeof InventoryRoute
   '/leaderboard': typeof LeaderboardRoute
   '/login': typeof LoginRoute
   '/marketplace': typeof MarketplaceRoute
-  '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
+  '/inventory': typeof AuthenticatedInventoryRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/cases/$id': typeof CasesIdRoute
   '/cases/': typeof CasesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/inventory': typeof InventoryRoute
   '/leaderboard': typeof LeaderboardRoute
   '/login': typeof LoginRoute
   '/marketplace': typeof MarketplaceRoute
-  '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
+  '/inventory': typeof AuthenticatedInventoryRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/cases/$id': typeof CasesIdRoute
   '/cases': typeof CasesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/inventory': typeof InventoryRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/leaderboard': typeof LeaderboardRoute
   '/login': typeof LoginRoute
   '/marketplace': typeof MarketplaceRoute
-  '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
+  '/_authenticated/inventory': typeof AuthenticatedInventoryRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/cases/$id': typeof CasesIdRoute
   '/cases/': typeof CasesIndexRoute
 }
@@ -103,45 +109,45 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/inventory'
     | '/leaderboard'
     | '/login'
     | '/marketplace'
-    | '/profile'
     | '/register'
+    | '/inventory'
+    | '/profile'
     | '/cases/$id'
     | '/cases/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/inventory'
     | '/leaderboard'
     | '/login'
     | '/marketplace'
-    | '/profile'
     | '/register'
+    | '/inventory'
+    | '/profile'
     | '/cases/$id'
     | '/cases'
   id:
     | '__root__'
     | '/'
-    | '/inventory'
+    | '/_authenticated'
     | '/leaderboard'
     | '/login'
     | '/marketplace'
-    | '/profile'
     | '/register'
+    | '/_authenticated/inventory'
+    | '/_authenticated/profile'
     | '/cases/$id'
     | '/cases/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  InventoryRoute: typeof InventoryRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   LeaderboardRoute: typeof LeaderboardRoute
   LoginRoute: typeof LoginRoute
   MarketplaceRoute: typeof MarketplaceRoute
-  ProfileRoute: typeof ProfileRoute
   RegisterRoute: typeof RegisterRoute
   CasesIdRoute: typeof CasesIdRoute
   CasesIndexRoute: typeof CasesIndexRoute
@@ -156,11 +162,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/inventory': {
-      id: '/inventory'
-      path: '/inventory'
-      fullPath: '/inventory'
-      preLoaderRoute: typeof InventoryRouteImport
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/leaderboard': {
@@ -184,19 +190,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketplaceRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/profile': {
-      id: '/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof ProfileRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/register': {
       id: '/register'
       path: '/register'
       fullPath: '/register'
       preLoaderRoute: typeof RegisterRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/inventory': {
+      id: '/_authenticated/inventory'
+      path: '/inventory'
+      fullPath: '/inventory'
+      preLoaderRoute: typeof AuthenticatedInventoryRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/cases/': {
       id: '/cases/'
@@ -215,13 +228,25 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedInventoryRoute: typeof AuthenticatedInventoryRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedInventoryRoute: AuthenticatedInventoryRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  InventoryRoute: InventoryRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   LeaderboardRoute: LeaderboardRoute,
   LoginRoute: LoginRoute,
   MarketplaceRoute: MarketplaceRoute,
-  ProfileRoute: ProfileRoute,
   RegisterRoute: RegisterRoute,
   CasesIdRoute: CasesIdRoute,
   CasesIndexRoute: CasesIndexRoute,
